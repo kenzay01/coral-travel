@@ -97,7 +97,7 @@ function CountdownTimer() {
   const formatTime = (num: number) => num.toString().padStart(2, "0");
 
   return (
-    <div className="bg-yellow-400 text-black px-4 py-2 rounded font-bold text-5xl">
+    <div className="bg-yellow-400 text-black px-4 py-2  font-bold text-5xl">
       {formatTime(time.hours)}:{formatTime(time.minutes)}:
       {formatTime(time.seconds)}
     </div>
@@ -194,9 +194,8 @@ export default function FormContainer({ type }: FormContainerProps) {
       <div className="bg-white py-8">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex flex-col gap-2 md:gap-8 relative">
-            {/* Зображення літака */}
             <div className="hidden md:block flex-shrink-0 absolute left-0 bottom-0">
-              <div className="w-80 h-46 md:w-110 md:h-64 bg-transparent rounded-lg overflow-hidden relative">
+              <div className="w-80 h-46 md:w-110 md:h-64 bg-transparent  overflow-hidden relative">
                 <Image
                   src={type === 1 ? formImage : formImage2}
                   alt={"Пасажир в літаку"}
@@ -205,7 +204,6 @@ export default function FormContainer({ type }: FormContainerProps) {
                 />
               </div>
             </div>
-            {/* Текст акції */}
             <div className="flex flex-wrap gap-4 justify-center items-center mb-4">
               <div className="relative">
                 <span className="bg-red-600 text-white px-4 md:px-2 py-1 font-bold animate-pulse text-5xl">
@@ -260,7 +258,7 @@ export default function FormContainer({ type }: FormContainerProps) {
               )}
 
               <div className="flex md:hidden flex-shrink-0 mb-8  justify-center relative">
-                <div className="w-80 h-46 bg-transparent rounded-lg overflow-hidden relative">
+                <div className="w-80 h-46 bg-transparent  overflow-hidden relative">
                   <Image
                     src={type === 1 ? formImage : formImage2}
                     alt={"Пасажир в літаку"}
