@@ -116,7 +116,10 @@ export default function CountriesPick() {
                   layout="fill"
                   objectFit="cover"
                   className="w-full h-full object-cover"
-                  quality={60}
+                  quality={40}
+                  placeholder="blur"
+                  blurDataURL={deal.image}
+                  priority
                 />
               </div>
 
