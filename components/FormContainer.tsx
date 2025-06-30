@@ -97,7 +97,7 @@ function CountdownTimer() {
   const formatTime = (num: number) => num.toString().padStart(2, "0");
 
   return (
-    <div className="bg-yellow-400 text-black px-4 py-2  font-bold text-5xl">
+    <div className="bg-yellow-400 text-black px-4 py-2  font-light text-5xl">
       {formatTime(time.hours)}:{formatTime(time.minutes)}:
       {formatTime(time.seconds)}
     </div>
@@ -204,7 +204,7 @@ export default function FormContainer({ type }: FormContainerProps) {
                 />
               </div>
             </div>
-            <div className="flex flex-wrap gap-4 justify-center items-center mb-4">
+            <div className="flex flex-wrap flex-col md:flex-row gap-4 justify-center items-center mb-4">
               <div className="relative">
                 <span className="bg-red-600 text-white px-4 md:px-2 py-1 font-bold animate-pulse text-5xl">
                   {type === 1 ? "Акція" : "УВАГА!"}
