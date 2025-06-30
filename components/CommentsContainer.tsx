@@ -4,7 +4,6 @@ import commentImg2 from "@/public/comments/rev-img-2.jpg";
 import commentImg3 from "@/public/comments/rev-img-3.jpg";
 import commentImg4 from "@/public/comments/rev-img-4.jpg";
 import commentImg5 from "@/public/comments/rev-img-5.jpg";
-import commentImg6 from "@/public/comments/rev-img-6.jpg";
 import CommentItem from "./CommentItem";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";

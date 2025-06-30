@@ -198,7 +198,7 @@ export default function MainBanner() {
               </div>
 
               <p className="text-white text-sm text-center mt-4">
-                Наш менеджер зв'яжеться з Вами найближчим часом
+                Наш менеджер зв`яжеться з Вами найближчим часом
               </p>
             </div>
           </div>
