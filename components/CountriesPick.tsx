@@ -119,7 +119,6 @@ export default function CountriesPick() {
                   quality={40}
                   placeholder="blur"
                   blurDataURL={deal.image}
-                  priority
                 />
               </div>
 
