@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
+import { useRouter } from "next/navigation";
+
 export default function Modal({
   isOpen,
   onClose,
@@ -12,6 +14,8 @@ export default function Modal({
   onClose: () => void;
   onSubmit?: (data: { name: string; phone: string }) => void;
 }) {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -71,6 +75,8 @@ export default function Modal({
     }
     setFormData({ name: "", phone: "" });
     setErrors({ name: "", phone: "" });
+
+    router.push("/send-request");
   };
 
   const handleInputChange = (field: "name" | "phone", value: string) => {

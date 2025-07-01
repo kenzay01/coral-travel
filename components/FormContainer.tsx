@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import formImage from "@/public/form_img.jpg"; // Зображення літака
 import formImage2 from "@/public/form_img_2.png"; // Додаткове зображення літака
 import arrowImage from "@/public/arrow.png"; // Зображення стрілки
+import { useRouter } from "next/navigation";
 
 const countries = [
   { uk: "Австрія" },
@@ -109,8 +110,7 @@ interface FormContainerProps {
 }
 
 export default function FormContainer({ type }: FormContainerProps) {
-  //   const currentLocale = useCurrentLanguage() as Locale;
-  //   const { dict, loading } = useDictionary(currentLocale);
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -184,6 +184,7 @@ export default function FormContainer({ type }: FormContainerProps) {
       destination: "",
       wishes: "",
     });
+    router.push("/send-request"); // Перенаправлення на сторінку з подякою
   };
 
   return (

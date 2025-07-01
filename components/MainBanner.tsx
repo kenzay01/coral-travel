@@ -4,9 +4,10 @@ import { useState } from "react";
 import mainBanner from "@/public/mainBanner.jpg";
 import logoImg from "@/public/logo.png";
 import Modal from "@/components/Modal";
+import { useRouter } from "next/navigation";
 export default function MainBanner() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -60,7 +61,7 @@ export default function MainBanner() {
       return;
     }
 
-    console.log("Form submitted:", formData);
+    router.push("/send-request"); // Перенаправлення на сторінку з подякою
   };
 
   return (

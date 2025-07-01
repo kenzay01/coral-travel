@@ -12,7 +12,6 @@ import PartnersContainer from "@/components/PartnersContainer";
 import IndividualComponent from "@/components/IndividualComponent";
 import CommentsContainer from "@/components/CommentsContainer";
 import MapContainer from "@/components/MapContainer";
-import Footer from "@/components/Footer";
 import RightSideButtons from "@/components/RightSideButtons";
 export default function Home() {
   return (
@@ -32,7 +31,6 @@ export default function Home() {
       <IndividualComponent />
       <CommentsContainer />
       <MapContainer />
-      <Footer />
       <RightSideButtons />
     </div>
   );
