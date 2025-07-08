@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
+import { sendToBitrix24 } from "@/utils/sendToBitrix";
 
 export default function Modal({
   isOpen,
@@ -14,7 +14,7 @@ export default function Modal({
   onClose: () => void;
   onSubmit?: (data: { name: string; phone: string }) => void;
 }) {
-  const router = useRouter();
+  // const router = useRouter();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -25,6 +25,8 @@ export default function Modal({
     name: "",
     phone: "",
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Block scroll when modal is open
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function Modal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors = {
       name: "",
       phone: "",
@@ -70,13 +72,43 @@ export default function Modal({
       return;
     }
 
-    if (onSubmit) {
-      onSubmit(formData);
-    }
-    setFormData({ name: "", phone: "" });
-    setErrors({ name: "", phone: "" });
+    setIsSubmitting(true);
 
-    router.push("/send-request");
+    try {
+      // Відправка до Bitrix24
+      const bitrixResult = await sendToBitrix24({
+        name: formData.name,
+        phone: formData.phone,
+        wishes: "Замовлення дзвінка через модальне вікно",
+      });
+
+      if (bitrixResult.success) {
+        console.log("Форма успішно відправлена до Bitrix24");
+
+        // Викликаємо callback якщо він переданий
+        if (onSubmit) {
+          onSubmit(formData);
+        }
+
+        // Очищаємо форму
+        setFormData({ name: "", phone: "" });
+        setErrors({ name: "", phone: "" });
+
+        // Закриваємо модальне вікно
+        onClose();
+
+        // Перенаправляємо на сторінку подяки
+        // router.push("/send-request");
+      } else {
+        console.error("Помилка при відправці до Bitrix24:", bitrixResult.error);
+        alert("Сталася помилка при відправці форми. Спробуйте ще раз.");
+      }
+    } catch (error) {
+      console.error("Загальна помилка:", error);
+      alert("Сталася помилка при відправці форми. Спробуйте ще раз.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (field: "name" | "phone", value: string) => {
@@ -110,6 +142,7 @@ export default function Modal({
         <button
           onClick={onClose}
           className="absolute top-2 right-2 md:top-4 md:right-4 text-white hover:text-gray-300 transition-colors p-1 bg-gray-400 rounded-full"
+          disabled={isSubmitting}
         >
           <X size={24} />
         </button>
@@ -130,6 +163,7 @@ export default function Modal({
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
               className="w-full px-4 py-3 bg-white border-0 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
+              disabled={isSubmitting}
             />
             {errors.name && (
               <p className="text-red-600 text-sm mt-1">{errors.name}</p>
@@ -143,6 +177,7 @@ export default function Modal({
               value={formData.phone}
               onChange={(e) => handleInputChange("phone", e.target.value)}
               className="w-full px-4 py-3 bg-white border-0 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
+              disabled={isSubmitting}
             />
             {errors.phone && (
               <p className="text-red-600 text-sm mt-1">{errors.phone}</p>
@@ -151,9 +186,10 @@ export default function Modal({
 
           <button
             onClick={handleSubmit}
-            className="w-full bg-yellow-500 hover:bg-yellow-600 font-medium py-3 px-6 rounded transition-colors mt-6"
+            className="w-full bg-yellow-500 hover:bg-yellow-600 font-medium py-3 px-6 rounded transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
-            Надіслати
+            {isSubmitting ? "Відправляється..." : "Надіслати"}
           </button>
         </div>
       </div>

@@ -1,13 +1,10 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-// import { useCurrentLanguage } from "@/hooks/getCurrentLanguage";
-// import { useDictionary } from "@/hooks/getDictionary";
-// import { Locale } from "@/i18n/config";
 import formImage from "@/public/form_img.jpg"; // Зображення літака
 import formImage2 from "@/public/form_img_2.png"; // Додаткове зображення літака
 import arrowImage from "@/public/arrow.png"; // Зображення стрілки
-import { useRouter } from "next/navigation";
+import { sendToBitrix24 } from "@/utils/sendToBitrix";
 
 const countries = [
   { uk: "Австрія" },
@@ -50,24 +47,15 @@ function CountdownTimer() {
   });
 
   useEffect(() => {
-    // Перевіряємо чи є збережений час в localStorage
-    const savedEndTime = localStorage.getItem("countdown-end-time");
-    const now = Date.now();
+    // Функція для створення нового таймера
+    const createNewTimer = () => {
+      const now = Date.now();
+      const endTime = now + 12 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000; // 12:59:59
+      return endTime;
+    };
 
-    let endTime: number;
-
-    if (savedEndTime) {
-      endTime = parseInt(savedEndTime);
-      // Якщо час закінчився, створюємо новий таймер
-      if (endTime <= now) {
-        endTime = now + 12 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000; // 12:59:59
-        localStorage.setItem("countdown-end-time", endTime.toString());
-      }
-    } else {
-      // Створюємо новий таймер на 12:59:59
-      endTime = now + 12 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000;
-      localStorage.setItem("countdown-end-time", endTime.toString());
-    }
+    // Ініціалізація таймера без localStorage
+    const endTime = createNewTimer();
 
     // Функція для оновлення таймера
     const updateTimer = () => {
@@ -110,7 +98,7 @@ interface FormContainerProps {
 }
 
 export default function FormContainer({ type }: FormContainerProps) {
-  const router = useRouter();
+  // const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -124,6 +112,8 @@ export default function FormContainer({ type }: FormContainerProps) {
     phone: "",
     email: "",
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   //   if (loading || !dict) {
   //     return <div className="h-96 bg-gray-100"></div>;
@@ -146,7 +136,7 @@ export default function FormContainer({ type }: FormContainerProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const newErrors = {
@@ -175,16 +165,41 @@ export default function FormContainer({ type }: FormContainerProps) {
       return;
     }
 
-    console.log("Form submitted:", formData);
-    alert("Заявка відправлена! Перевірте консоль для деталей.");
-    setFormData({
-      name: "",
-      phone: "",
-      email: "",
-      destination: "",
-      wishes: "",
-    });
-    router.push("/send-request"); // Перенаправлення на сторінку з подякою
+    setIsSubmitting(true);
+
+    try {
+      // Відправляємо дані до Bitrix24
+      const result = await sendToBitrix24(formData);
+
+      if (result.success) {
+        console.log("Form submitted successfully:", formData);
+        alert(
+          "Заявка успішно відправлена! Наш менеджер зв'яжеться з вами найближчим часом."
+        );
+
+        // Очищуємо форму
+        setFormData({
+          name: "",
+          phone: "",
+          email: "",
+          destination: "",
+          wishes: "",
+        });
+
+        // Перенаправляємо на сторінку з подякою
+        // router.push("/send-request");
+      } else {
+        console.error("Помилка при відправці:", result.error);
+        alert(
+          "Виникла помилка при відправці заявки. Спробуйте ще раз або зв'яжіться з нами за телефоном."
+        );
+      }
+    } catch (error) {
+      console.error("Непередбачена помилка:", error);
+      alert("Виникла непередбачена помилка. Спробуйте ще раз.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -309,7 +324,7 @@ export default function FormContainer({ type }: FormContainerProps) {
                 onChange={handleInputChange}
                 placeholder="Ваше ім'я*"
                 className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                // required
+                disabled={isSubmitting}
               />
               {errors.name && (
                 <p className="text-red-600 text-xs mt-1">{errors.name}</p>
@@ -324,7 +339,7 @@ export default function FormContainer({ type }: FormContainerProps) {
                 onChange={handleInputChange}
                 placeholder="Ваш телефон*"
                 className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                // required
+                disabled={isSubmitting}
               />
               {errors.phone && (
                 <p className="text-red-600 text-xs mt-1">{errors.phone}</p>
@@ -339,7 +354,7 @@ export default function FormContainer({ type }: FormContainerProps) {
                 onChange={handleInputChange}
                 placeholder="Ваш E-mail*"
                 className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                // required
+                disabled={isSubmitting}
               />
               {errors.email && (
                 <p className="text-red-600 text-xs mt-1">{errors.email}</p>
@@ -352,6 +367,7 @@ export default function FormContainer({ type }: FormContainerProps) {
                 value={formData.destination}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border text-gray-500 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white h-12.5"
+                disabled={isSubmitting}
               >
                 <option value="">Летим в</option>
 
@@ -371,15 +387,17 @@ export default function FormContainer({ type }: FormContainerProps) {
                   placeholder="Ваші побажання"
                   rows={2}
                   className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+                  disabled={isSubmitting}
                 ></textarea>
               </div>
             ) : null}
             <div className="flex-shrink-0">
               <button
                 type="submit"
-                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-3.5 transition-colors duration-300"
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-3.5 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSubmitting}
               >
-                Підібрати тур
+                {isSubmitting ? "Відправляємо..." : "Підібрати тур"}
               </button>
             </div>
           </form>
@@ -394,6 +412,7 @@ export default function FormContainer({ type }: FormContainerProps) {
                 placeholder="Ваші побажання"
                 rows={2}
                 className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+                disabled={isSubmitting}
               ></textarea>
             </div>
           ) : null}

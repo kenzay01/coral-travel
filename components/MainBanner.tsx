@@ -4,10 +4,11 @@ import { useState } from "react";
 import mainBanner from "@/public/mainBanner.jpg";
 import logoImg from "@/public/logo.png";
 import Modal from "@/components/Modal";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
+import { sendToBitrix24 } from "@/utils/sendToBitrix";
 export default function MainBanner() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -18,6 +19,8 @@ export default function MainBanner() {
     name: "",
     phone: "",
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -37,7 +40,7 @@ export default function MainBanner() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors = {
@@ -61,7 +64,35 @@ export default function MainBanner() {
       return;
     }
 
-    router.push("/send-request"); // Перенаправлення на сторінку з подякою
+    setIsSubmitting(true);
+
+    try {
+      // Відправка до Bitrix24
+      const bitrixResult = await sendToBitrix24({
+        name: formData.name,
+        phone: formData.phone,
+        wishes: formData.wishes || "Заявка з головного банеру",
+      });
+
+      if (bitrixResult.success) {
+        console.log("Форма успішно відправлена до Bitrix24");
+
+        // Очищаємо форму
+        setFormData({ name: "", phone: "", wishes: "" });
+        setErrors({ name: "", phone: "" });
+
+        // Перенаправляємо на сторінку подяки
+        // router.push("/send-request");
+      } else {
+        console.error("Помилка при відправці до Bitrix24:", bitrixResult.error);
+        alert("Сталася помилка при відправці форми. Спробуйте ще раз.");
+      }
+    } catch (error) {
+      console.error("Загальна помилка:", error);
+      alert("Сталася помилка при відправці форми. Спробуйте ще раз.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -149,7 +180,7 @@ export default function MainBanner() {
                 та отримайте 5 варіантів відпочинку всього за 1 ГОДИНУ
               </p>
 
-              <div onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <input
                     type="text"
@@ -158,6 +189,7 @@ export default function MainBanner() {
                     value={formData.name}
                     onChange={handleInputChange}
                     className="bg-white w-full px-4 py-3 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                    disabled={isSubmitting}
                     required
                   />
                   {errors.name && (
@@ -173,6 +205,7 @@ export default function MainBanner() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     className="bg-white w-full px-4 py-3 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                    disabled={isSubmitting}
                     required
                   />
                   {errors.phone && (
@@ -187,16 +220,17 @@ export default function MainBanner() {
                   onChange={handleInputChange}
                   rows={4}
                   className="bg-white w-full px-4 py-3 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent resize-none"
+                  disabled={isSubmitting}
                 />
 
                 <button
                   type="submit"
-                  onClick={handleSubmit}
-                  className="w-full bg-yellow-400 hover:bg-yellow-600 text-white font-bold py-4 rounded-md transition-colors"
+                  className="w-full bg-yellow-400 hover:bg-yellow-600 text-white font-bold py-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isSubmitting}
                 >
-                  Надіслати
+                  {isSubmitting ? "Відправляється..." : "Надіслати"}
                 </button>
-              </div>
+              </form>
 
               <p className="text-white text-sm text-center mt-4">
                 Наш менеджер зв`яжеться з Вами найближчим часом
