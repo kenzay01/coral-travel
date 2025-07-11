@@ -9,7 +9,7 @@ import { sendToBitrix24 } from "@/utils/sendToBitrix";
 const countries = [
   { uk: "Австрія" },
   { uk: "Андора" },
-  { uk: "Білорусь" },
+  // { uk: "Білорусь" },
   { uk: "Болгарія" },
   { uk: "Угорщина" },
   { uk: "Греція" },
@@ -235,13 +235,14 @@ export default function FormContainer({ type }: FormContainerProps) {
                 <div className="text-3xl md:text-5xl text-black mb-4 font-sans relative">
                   Залишіть заявку{" "}
                   <span className="text-cyan-500">СЬОГОДНІ</span> <br /> та
-                  отримайте сертифікат на
+                  отримайте <br />
+                  {/* сертифікат на
                   <br />{" "}
                   <span className="text-cyan-500 uppercase">захоплюючу</span>
                   <br />{" "}
                   <span className="text-cyan-500 uppercase">
                     екскурсію
-                  </span> та <br />{" "}
+                  </span> та <br />{" "} */}
                   <span className="text-cyan-500 uppercase">
                     особистий дзвінок
                   </span>{" "}

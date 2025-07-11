@@ -110,7 +110,7 @@ export default function SendRequestPage() {
         </section>
         <div className="relative h-[300px]">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d10184.873116682245!2d30.5456!3d50.343834!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40d4c7b2bfe388c9%3A0x44648bd073e99bd7!2sArt%20Mall!5e0!3m2!1sen!2sus!4v1751284889708!5m2!1sen!2sus"
+            src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d2539.9658351053095!2d30.6371590260985!3d50.46036088665067!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1z0JLRg9C7LiDQr9C60L7QstCwINCT0L3RltC30LTQvtCy0YHRjNC60L7Qs9C-IDFBLCDQvC4g0JvRltGB0L7QstCw!5e0!3m2!1suk!2sua!4v1752232150886!5m2!1suk!2sua"
             // width="600"
             // height="300"
             className="w-full h-full"
@@ -127,7 +127,7 @@ export default function SendRequestPage() {
             </div>
             <div className="flex-1 text-white flex flex-col items-center md:items-end ">
               <div className="text-lg text-end">
-                м. Київ, вул. Заболотного, 37 <br /> ТРЦ ART MALL, 2 поверх
+                м. Київ, вул. Якова Гніздовського 1A, м. Лісова
               </div>
               <div className="text-xl">+38 (044) 499-99-39</div>
               <button

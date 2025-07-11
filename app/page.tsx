@@ -13,6 +13,7 @@ import IndividualComponent from "@/components/IndividualComponent";
 import CommentsContainer from "@/components/CommentsContainer";
 import MapContainer from "@/components/MapContainer";
 import RightSideButtons from "@/components/RightSideButtons";
+import TelegramPopup from "@/components/TelegramPopup";
 export default function Home() {
   return (
     <div className="relative">
@@ -32,6 +33,7 @@ export default function Home() {
       <CommentsContainer />
       <MapContainer />
       <RightSideButtons />
+      <TelegramPopup />
     </div>
   );
 }

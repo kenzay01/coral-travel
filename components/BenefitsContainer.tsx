@@ -25,7 +25,7 @@ export default function BenefitsContainer() {
     <section className="bg-cyan-500 flex items-center justify-center py-12 text-white">
       <div className="max-w-4xl ">
         <h1 className="text-3xl text-center mb-8">
-          Ваші переваги відпочинку з Турагентством Coral Travel
+          Ваші переваги відпочинку з туристичною агенцією Coral Travel
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6 px-4">
           {benefits.map((benefit) => (
