@@ -27,7 +27,7 @@ export default function Offers2Container() {
       id: 4,
       titleKey: "Підтримку у відпустці",
       contentKey:
-        "Турагентство Coral Travel приділяє особливу увагу контролю якості послуг на всіх етапах.",
+        "Туристична агенція Coral Travel приділяє особливу увагу контролю якості послуг на всіх етапах.",
       img: <Phone className="w-26 h-26 text-cyan-500" />,
     },
   ];
