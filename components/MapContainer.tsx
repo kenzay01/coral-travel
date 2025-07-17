@@ -62,7 +62,7 @@ export default function MapContainer() {
               <Image src={logoImg} alt="Logo" className="h-22 w-auto" />
             </div>
             <div className="flex-1 text-white flex flex-col items-center md:items-end ">
-              <div className="text-lg text-end">
+              <div className="md:text-lg md:text-end text-center">
                 м. Київ, вул. Якова Гніздовського 1A, м. Лісова
               </div>
               <div className="text-xl">+38 (044) 499-99-39</div>
