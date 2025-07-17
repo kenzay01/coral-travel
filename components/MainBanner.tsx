@@ -4,11 +4,10 @@ import { useState } from "react";
 import mainBanner from "@/public/mainBanner.jpg";
 import logoImg from "@/public/logo.png";
 import Modal from "@/components/Modal";
-// import { useRouter } from "next/navigation";
 import { sendToBitrix24 } from "@/utils/sendToBitrix";
+
 export default function MainBanner() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -26,12 +25,21 @@ export default function MainBanner() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    let newValue = value;
+
+    if (name === "phone" && value.trim() && !value.startsWith("+380")) {
+      if (/^\d/.test(value)) {
+        newValue = "+380" + value.replace(/^\d+/, "");
+      } else {
+        newValue = value.replace(/^\+?38?0?/, "+380");
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }));
 
-    // Очищуємо помилку при введенні тексту
     if (name === "name" || name === "phone") {
       setErrors((prev) => ({
         ...prev,
@@ -48,18 +56,19 @@ export default function MainBanner() {
       phone: "",
     };
 
-    // Валідація
     if (formData.name.trim() === "") {
       newErrors.name = "Поле Ваше ім'я є обов'язковим для заповнення.";
     }
 
+    const phoneRegex = /^\+380\d{9}$/;
     if (formData.phone.trim() === "") {
       newErrors.phone = "Поле Ваш телефон є обов'язковим для заповнення.";
+    } else if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = "Ви ввели некоректний номер.";
     }
 
     setErrors(newErrors);
 
-    // Якщо є помилки, не відправляємо форму
     if (newErrors.name || newErrors.phone) {
       return;
     }
@@ -67,7 +76,6 @@ export default function MainBanner() {
     setIsSubmitting(true);
 
     try {
-      // Відправка до Bitrix24
       const bitrixResult = await sendToBitrix24({
         name: formData.name,
         phone: formData.phone,
@@ -76,13 +84,8 @@ export default function MainBanner() {
 
       if (bitrixResult.success) {
         console.log("Форма успішно відправлена до Bitrix24");
-
-        // Очищаємо форму
         setFormData({ name: "", phone: "", wishes: "" });
         setErrors({ name: "", phone: "" });
-
-        // Перенаправляємо на сторінку подяки
-        // router.push("/send-request");
       } else {
         console.error("Помилка при відправці до Bitrix24:", bitrixResult.error);
         alert("Сталася помилка при відправці форми. Спробуйте ще раз.");
@@ -98,7 +101,6 @@ export default function MainBanner() {
   return (
     <>
       <div className="relative min-h-screen">
-        {/* Background Image */}
         <div className="absolute inset-0">
           <Image
             src={mainBanner}
@@ -109,8 +111,6 @@ export default function MainBanner() {
           />
           <div className="absolute inset-0 bg-black/20"></div>
         </div>
-
-        {/* Content - додали відступ зверху для хедера */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 pt-14 pb-12 flex flex-col items-center justify-center">
           <div className="hidden md:flex justify-between items-start w-full mb-8 max-w-4xl">
             <Image src={logoImg} alt="Logo" />
@@ -123,17 +123,12 @@ export default function MainBanner() {
               Замовити дзвінок
             </button>
           </div>
-
-          {/* Main heading */}
           <div className="text-center mb-12 mt-8 md:mt-0">
             <h1 className={`text-2xl md:text-5xl font-medium text-white mb-4 `}>
               Професійний підбір туру під ваші <br /> особисті побажання
             </h1>
           </div>
-
-          {/* Two columns layout */}
           <div className="grid lg:grid-cols-2 gap-8 items-center md:items-start justify-center">
-            {/* Left side - Red banner with clip-path */}
             <div
               className="hidden lg:block bg-cyan-500 px-8 py-4 text-white relative rounded-lg w-[500px]"
               style={{
@@ -143,7 +138,6 @@ export default function MainBanner() {
               <h2 className="text-2xl font-bold my-2 max-w-[400px] uppercase">
                 Отримайте <br /> персональний підбір <br /> туру за 1 ГОДИНУ
               </h2>
-
               <div className="space-y-3 mb-6 ">
                 <p>
                   Акція! Кожному клієнту індивідуальна особиста знижка! <br />
@@ -161,7 +155,6 @@ export default function MainBanner() {
               <h2 className="text-3xl font-bold my-2 max-w-[400px] uppercase">
                 Отримайте <br /> персональний підбір <br /> туру за 1 ГОДИНУ
               </h2>
-
               <div className="space-y-3 mb-6 text-lg">
                 <p>
                   Акція! Кожному клієнту індивідуальна особиста знижка! <br />
@@ -170,8 +163,6 @@ export default function MainBanner() {
                 <p>Поспішайте, тимчасова акція!</p>
               </div>
             </div>
-
-            {/* Right side - Form */}
             <div className="bg-black/40 p-4 md:p-8 rounded-lg border-4 border-yellow-400 max-w-sm">
               <h3 className="text-3xl font-medium text-yellow-400 mb-2 text-center">
                 Заповніть форму зараз
@@ -179,7 +170,6 @@ export default function MainBanner() {
               <p className="text-white mb-6">
                 та отримайте 5 варіантів відпочинку всього за 1 ГОДИНУ
               </p>
-
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <input
@@ -196,7 +186,6 @@ export default function MainBanner() {
                     <p className="text-red-600 text-sm mt-1">{errors.name}</p>
                   )}
                 </div>
-
                 <div>
                   <input
                     type="tel"
@@ -212,7 +201,6 @@ export default function MainBanner() {
                     <p className="text-red-600 text-sm mt-1">{errors.phone}</p>
                   )}
                 </div>
-
                 <textarea
                   name="wishes"
                   placeholder="Ваші побажання"
@@ -222,7 +210,6 @@ export default function MainBanner() {
                   className="bg-white w-full px-4 py-3 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent resize-none"
                   disabled={isSubmitting}
                 />
-
                 <button
                   type="submit"
                   className="w-full bg-yellow-400 hover:bg-yellow-600 text-white font-bold py-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -231,14 +218,11 @@ export default function MainBanner() {
                   {isSubmitting ? "Відправляється..." : "Надіслати"}
                 </button>
               </form>
-
               <p className="text-white text-sm text-center mt-4">
                 Наш менеджер зв`яжеться з Вами найближчим часом
               </p>
             </div>
           </div>
-
-          {/* Payment methods */}
           <div className="mt-16 text-center ">
             <div className="bg-black/50 inline-block py-2 px-4 md:px-8 md:py-4 rounded-lg">
               <p className="text-white mb-4 font-medium">
@@ -250,15 +234,11 @@ export default function MainBanner() {
                   alt=""
                   className="w-16 h-10 rounded-sm"
                 />
-
-                {/* VISA */}
                 <img
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Old_Visa_Logo.svg/2560px-Old_Visa_Logo.svg.png"
                   alt=""
                   className="w-16 h-10 rounded-sm"
                 />
-
-                {/* Another payment method */}
                 <img
                   src="https://play-lh.googleusercontent.com/VciK8VupOQM4EcOwr0M0nOVN34kao52yVxwlKkF3OFim3i4QNVpzAKHrJEDvVwD4QVNn"
                   alt=""

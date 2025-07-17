@@ -1,15 +1,14 @@
 "use client";
-import Image from "next/image";
 import { useState, useEffect } from "react";
-import formImage from "@/public/form_img.jpg"; // Зображення літака
-import formImage2 from "@/public/form_img_2.png"; // Додаткове зображення літака
-import arrowImage from "@/public/arrow.png"; // Зображення стрілки
+import Image from "next/image";
+import formImage from "@/public/form_img.jpg";
+import formImage2 from "@/public/form_img_2.png";
+import arrowImage from "@/public/arrow.png";
 import { sendToBitrix24 } from "@/utils/sendToBitrix";
 
 const countries = [
   { uk: "Австрія" },
   { uk: "Андора" },
-  // { uk: "Білорусь" },
   { uk: "Болгарія" },
   { uk: "Угорщина" },
   { uk: "Греція" },
@@ -38,7 +37,6 @@ const countries = [
   { uk: "Естонія" },
 ];
 
-// Окремий компонент для таймера зворотного відліку
 function CountdownTimer() {
   const [time, setTime] = useState({
     hours: 12,
@@ -47,17 +45,14 @@ function CountdownTimer() {
   });
 
   useEffect(() => {
-    // Функція для створення нового таймера
     const createNewTimer = () => {
       const now = Date.now();
-      const endTime = now + 12 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000; // 12:59:59
+      const endTime = now + 12 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000;
       return endTime;
     };
 
-    // Ініціалізація таймера без localStorage
     const endTime = createNewTimer();
 
-    // Функція для оновлення таймера
     const updateTimer = () => {
       const currentTime = Date.now();
       const timeLeft = endTime - currentTime;
@@ -74,19 +69,15 @@ function CountdownTimer() {
       setTime({ hours, minutes, seconds });
     };
 
-    // Оновлюємо таймер одразу
     updateTimer();
-
-    // Встановлюємо інтервал
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
   const formatTime = (num: number) => num.toString().padStart(2, "0");
 
   return (
-    <div className="bg-yellow-400 text-black px-4 py-2  font-light text-5xl">
+    <div className="bg-yellow-400 text-black px-4 py-2 font-light text-5xl">
       {formatTime(time.hours)}:{formatTime(time.minutes)}:
       {formatTime(time.seconds)}
     </div>
@@ -98,7 +89,6 @@ interface FormContainerProps {
 }
 
 export default function FormContainer({ type }: FormContainerProps) {
-  // const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -115,19 +105,24 @@ export default function FormContainer({ type }: FormContainerProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //   if (loading || !dict) {
-  //     return <div className="h-96 bg-gray-100"></div>;
-  //   }
-
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let newValue = value;
 
-    // Очищуємо помилку при введенні тексту
+    if (name === "phone" && value.trim() && !value.startsWith("+380")) {
+      if (/^\d/.test(value)) {
+        newValue = "+380" + value.replace(/^\d+/, "");
+      } else {
+        newValue = value.replace(/^\+?38?0?/, "+380");
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
+
     if (name === "name" || name === "phone" || name === "email") {
       setErrors((prev) => ({
         ...prev,
@@ -145,13 +140,15 @@ export default function FormContainer({ type }: FormContainerProps) {
       email: "",
     };
 
-    // Валідація
     if (formData.name.trim() === "") {
       newErrors.name = "Поле Ваше ім'я є обов'язковим для заповнення.";
     }
 
+    const phoneRegex = /^\+380\d{9}$/;
     if (formData.phone.trim() === "") {
       newErrors.phone = "Поле Ваш телефон є обов'язковим для заповнення.";
+    } else if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = "Ви ввели некоректний номер.";
     }
 
     if (formData.email.trim() === "") {
@@ -160,7 +157,6 @@ export default function FormContainer({ type }: FormContainerProps) {
 
     setErrors(newErrors);
 
-    // Якщо є помилки, не відправляємо форму
     if (newErrors.name || newErrors.phone || newErrors.email) {
       return;
     }
@@ -168,7 +164,6 @@ export default function FormContainer({ type }: FormContainerProps) {
     setIsSubmitting(true);
 
     try {
-      // Відправляємо дані до Bitrix24
       const result = await sendToBitrix24(formData);
 
       if (result.success) {
@@ -176,8 +171,6 @@ export default function FormContainer({ type }: FormContainerProps) {
         alert(
           "Заявка успішно відправлена! Наш менеджер зв'яжеться з вами найближчим часом."
         );
-
-        // Очищуємо форму
         setFormData({
           name: "",
           phone: "",
@@ -185,9 +178,6 @@ export default function FormContainer({ type }: FormContainerProps) {
           destination: "",
           wishes: "",
         });
-
-        // Перенаправляємо на сторінку з подякою
-        // router.push("/send-request");
       } else {
         console.error("Помилка при відправці:", result.error);
         alert(
@@ -211,7 +201,7 @@ export default function FormContainer({ type }: FormContainerProps) {
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex flex-col gap-2 md:gap-8 relative">
             <div className="hidden md:block flex-shrink-0 absolute left-0 bottom-0">
-              <div className="w-80 h-46 md:w-110 md:h-64 bg-transparent  overflow-hidden relative">
+              <div className="w-80 h-46 md:w-110 md:h-64 bg-transparent overflow-hidden relative">
                 <Image
                   src={type === 1 ? formImage : formImage2}
                   alt={"Пасажир в літаку"}
@@ -236,13 +226,6 @@ export default function FormContainer({ type }: FormContainerProps) {
                   Залишіть заявку{" "}
                   <span className="text-cyan-500">СЬОГОДНІ</span> <br /> та
                   отримайте <br />
-                  {/* сертифікат на
-                  <br />{" "}
-                  <span className="text-cyan-500 uppercase">захоплюючу</span>
-                  <br />{" "}
-                  <span className="text-cyan-500 uppercase">
-                    екскурсію
-                  </span> та <br />{" "} */}
                   <span className="text-cyan-500 uppercase">
                     особистий дзвінок
                   </span>{" "}
@@ -259,10 +242,10 @@ export default function FormContainer({ type }: FormContainerProps) {
                 </div>
               ) : (
                 <div className="text-5xl text-black mb-4 font-sans relative">
-                  Залишіть заявку ЗАРАЗ, та <br /> отримайте актуальні <br />{" "}
-                  гарячі тури <br /> от{" "}
+                  Залиште заявку ЗАРАЗ, та <br /> отримайте актуальні <br />{" "}
+                  гарячі тури <br /> від{" "}
                   <span className="text-cyan-500 ">
-                    Турагентства <br /> Coral Travel
+                    Туристичного агентства <br /> Coral Travel
                   </span>
                   <Image
                     src={arrowImage}
@@ -273,9 +256,8 @@ export default function FormContainer({ type }: FormContainerProps) {
                   />
                 </div>
               )}
-
-              <div className="flex md:hidden flex-shrink-0 mb-8  justify-center relative">
-                <div className="w-80 h-46 bg-transparent  overflow-hidden relative">
+              <div className="flex md:hidden flex-shrink-0 mb-8 justify-center relative">
+                <div className="w-80 h-46 bg-transparent overflow-hidden relative">
                   <Image
                     src={type === 1 ? formImage : formImage2}
                     alt={"Пасажир в літаку"}
@@ -291,7 +273,6 @@ export default function FormContainer({ type }: FormContainerProps) {
                   height={35}
                 />
               </div>
-              {/* Таймер */}
               <div className="flex justify-center lg:justify-end md:mr-16">
                 <CountdownTimer />
               </div>
@@ -299,10 +280,7 @@ export default function FormContainer({ type }: FormContainerProps) {
           </div>
         </div>
       </div>
-
-      {/* Нижня частина з формою */}
       <div className="bg-cyan-500 py-8">
-        {/* Фон з літаками */}
         <div
           className="max-w-5xl mx-auto px-4"
           id={type === 1 ? "form" : undefined}
@@ -311,8 +289,6 @@ export default function FormContainer({ type }: FormContainerProps) {
             Заповніть форму <br /> та отримайте підбір індивідуального туру за 1
             годину
           </h2>
-
-          {/* Форма */}
           <form
             onSubmit={handleSubmit}
             className="flex flex-wrap gap-2 justify-center items-end"
@@ -331,7 +307,6 @@ export default function FormContainer({ type }: FormContainerProps) {
                 <p className="text-red-600 text-xs mt-1">{errors.name}</p>
               )}
             </div>
-
             <div className="flex-1 min-w-[150px] md:min-w-[175px] max-w-[200px]">
               <input
                 type="tel"
@@ -346,7 +321,6 @@ export default function FormContainer({ type }: FormContainerProps) {
                 <p className="text-red-600 text-xs mt-1">{errors.phone}</p>
               )}
             </div>
-
             <div className="flex-1 min-w-[150px] md:min-w-[175px] max-w-[200px]">
               <input
                 type="email"
@@ -361,7 +335,6 @@ export default function FormContainer({ type }: FormContainerProps) {
                 <p className="text-red-600 text-xs mt-1">{errors.email}</p>
               )}
             </div>
-
             <div className="flex-1 min-w-[150px] md:min-w-[175px] max-w-[200px]">
               <select
                 name="destination"
@@ -371,7 +344,6 @@ export default function FormContainer({ type }: FormContainerProps) {
                 disabled={isSubmitting}
               >
                 <option value="">Летим в</option>
-
                 {countries.map((country) => (
                   <option key={country.uk} value={country.uk}>
                     {country.uk}
@@ -402,8 +374,6 @@ export default function FormContainer({ type }: FormContainerProps) {
               </button>
             </div>
           </form>
-
-          {/* Поле для побажань */}
           {type === 1 ? (
             <div className="mt-2 w-full mx-auto hidden md:block">
               <textarea
