@@ -14,6 +14,7 @@ import CommentsContainer from "@/components/CommentsContainer";
 import MapContainer from "@/components/MapContainer";
 import RightSideButtons from "@/components/RightSideButtons";
 import TelegramPopup from "@/components/TelegramPopup";
+import CallSection from "@/components/CallSection";
 export default function Home() {
   return (
     <div className="relative">
@@ -31,6 +32,7 @@ export default function Home() {
       <PartnersContainer />
       <IndividualComponent />
       <CommentsContainer />
+      <CallSection />
       <MapContainer />
       <RightSideButtons />
       <TelegramPopup />
